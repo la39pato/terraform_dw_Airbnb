@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-ucb-sisinfo-4216369"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
+		"dw_Airbnb_password": {
+			"value": ""
+		},
+		"dw_Airbnb_properties_typeProperties_server": {
+			"value": "sql-ucb-sisinfo-4216369.database.windows.net"
+		},
+		"dw_Airbnb_properties_typeProperties_database": {
+			"value": "dw_airbnb"
+		},
+		"dw_Airbnb_properties_typeProperties_userName": {
+			"value": "naty"
+		}
+	}
+}
