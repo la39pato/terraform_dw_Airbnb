@@ -292,8 +292,9 @@
 					},
 					{
 						"name": "Price",
-						"type": "int",
-						"precision": 10
+						"type": "decimal",
+						"precision": 9,
+						"scale": 2
 					},
 					{
 						"name": "Day",
@@ -397,6 +398,950 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/dw_Airbnb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_city')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "bd_aemf1_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_city",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          City",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(City, true)) ~> sort1",
+						"sort1 aggregate(groupBy(City),",
+						"     each(match(name!='City'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          City as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          City",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/bd_aemf1_csv')]",
+				"[concat(variables('factoryId'), '/datasets/dim_city')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_city_center')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "bd_aemf1_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_city_center",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as decimal(10,2),",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          {City Center (km)}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc({City Center (km)}, true)) ~> sort1",
+						"sort1 aggregate(groupBy({City Center (km)}),",
+						"     each(match(name!='City Center (km)'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          City_Center as decimal(9,2)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          City_Center = {City Center (km)}",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/bd_aemf1_csv')]",
+				"[concat(variables('factoryId'), '/datasets/dim_city_center')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_cleanliness_rating')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "bd_aemf1_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_cleanliness_rating",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as decimal(10,2),",
+						"          {Guest Satisfaction} as string,",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          {Cleanliness Rating}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc({Cleanliness Rating}, true)) ~> sort1",
+						"sort1 aggregate(groupBy({Cleanliness Rating}),",
+						"     each(match(name!='Cleanliness Rating'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Cleanliness_Rating as decimal(9,2)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Cleanliness_Rating = {Cleanliness Rating}",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/bd_aemf1_csv')]",
+				"[concat(variables('factoryId'), '/datasets/dim_cleanliness_rating')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_dim_guest_satisfaction')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "bd_aemf1_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_guest_satisfaction",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as string,",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as string,",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as string,",
+						"          {Guest Satisfaction} as decimal(10,2),",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as string,",
+						"          {Metro Distance (km)} as string,",
+						"          {Attraction Index} as string,",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as string,",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          {Guest Satisfaction}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc({Guest Satisfaction}, true)) ~> sort1",
+						"sort1 aggregate(groupBy({Guest Satisfaction}),",
+						"     each(match(name!='Guest Satisfaction'), $$ = first($$))) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Guest_Satisfaction as decimal(9,2)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Guest_Satisfaction = {Guest Satisfaction}",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/bd_aemf1_csv')]",
+				"[concat(variables('factoryId'), '/datasets/dim_guest_satisfaction')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_fact_stays')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "bd_aemf1_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dim_fact_stays",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          City as string,",
+						"          Price as decimal(10,2),",
+						"          Day as string,",
+						"          {Room Type} as string,",
+						"          {Shared Room} as string,",
+						"          {Private Room} as string,",
+						"          {Person Capacity} as decimal(10,2),",
+						"          Superhost as string,",
+						"          {Multiple Rooms} as string,",
+						"          Business as string,",
+						"          {Cleanliness Rating} as decimal(10,2),",
+						"          {Guest Satisfaction} as decimal(10,2),",
+						"          Bedrooms as string,",
+						"          {City Center (km)} as decimal(10,2),",
+						"          {Metro Distance (km)} as decimal(10,2),",
+						"          {Attraction Index} as decimal(10,2),",
+						"          {Normalised Attraction Index} as string,",
+						"          {Restraunt Index} as decimal(10,2),",
+						"          {Normalised Restraunt Index} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 select(mapColumn(",
+						"          City,",
+						"          Price,",
+						"          Day,",
+						"          {Room Type},",
+						"          {Shared Room},",
+						"          {Private Room},",
+						"          {Person Capacity},",
+						"          {Cleanliness Rating},",
+						"          {Guest Satisfaction},",
+						"          Bedrooms,",
+						"          {City Center (km)},",
+						"          {Metro Distance (km)},",
+						"          {Attraction Index},",
+						"          {Restraunt Index}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id_facts as integer,",
+						"          City as string,",
+						"          Price as decimal(9,2),",
+						"          Day as string,",
+						"          Room_Type as string,",
+						"          Shared_room as string,",
+						"          Private_room as string,",
+						"          Bedrooms as integer,",
+						"          Person_Capacity as decimal(9,2),",
+						"          Cleanliness_Rating as decimal(9,2),",
+						"          Guest_Satisfaction as decimal(9,2),",
+						"          City_Center as decimal(9,2),",
+						"          Metro_Distance as decimal(9,2),",
+						"          Attraction_Index as decimal(9,2),",
+						"          Restraunt_Index as decimal(9,2)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'allErrors',",
+						"     transactionCommit: 'single',",
+						"     reportSuccessOnError: false,",
+						"     mapColumn(",
+						"          City,",
+						"          Price,",
+						"          Day,",
+						"          Room_Type = {Room Type},",
+						"          Shared_room = {Shared Room},",
+						"          Private_room = {Private Room},",
+						"          Bedrooms,",
+						"          Person_Capacity = {Person Capacity},",
+						"          Cleanliness_Rating = {Cleanliness Rating},",
+						"          Guest_Satisfaction = {Guest Satisfaction},",
+						"          City_Center = {City Center (km)},",
+						"          Metro_Distance = {Metro Distance (km)},",
+						"          Attraction_Index = {Attraction Index},",
+						"          Restraunt_Index = {Restraunt Index}",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/bd_aemf1_csv')]",
+				"[concat(variables('factoryId'), '/datasets/dim_fact_stays')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/etl')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_dim_city",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_city",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_dim_city_center",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_city",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_city_center",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_dim_cleanliness_rating",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_city_center",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_cleanliness_rating",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_dim_guest_satisfaction",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_cleanliness_rating",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_guest_satisfaction",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_fact_stays",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_dim_guest_satisfaction",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_fact_stays",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "ETL"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_dim_city')]",
+				"[concat(variables('factoryId'), '/dataflows/df_dim_city_center')]",
+				"[concat(variables('factoryId'), '/dataflows/df_dim_cleanliness_rating')]",
+				"[concat(variables('factoryId'), '/dataflows/df_dim_guest_satisfaction')]",
+				"[concat(variables('factoryId'), '/dataflows/df_fact_stays')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_city')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_city",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Pipelines"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_dim_city')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_city_center')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_city_center",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Pipelines"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_dim_city_center')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_cleanliness_rating')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_cleanliness_rating",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Pipelines"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_dim_cleanliness_rating')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_fact_stays')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_fact_stays",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Pipelines"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_fact_stays')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_guest_satisfaction')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_dim_guest_satisfaction",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Pipelines"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_dim_guest_satisfaction')]"
 			]
 		}
 	]
