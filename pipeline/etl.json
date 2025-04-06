@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "etl",
 	"properties": {
 		"activities": [
 			{
@@ -110,6 +110,37 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "df_dim_guest_satisfaction",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "df_fact_stays",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "df_dim_guest_satisfaction",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_fact_stays",
 						"type": "DataFlowReference"
 					},
 					"compute": {
