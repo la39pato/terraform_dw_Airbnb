@@ -1,0 +1,24 @@
+{
+	"name": "dim_city",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_Airbnb",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DW"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "City",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_CITY"
+		}
+	}
+}
